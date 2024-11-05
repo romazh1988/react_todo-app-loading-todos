@@ -7,19 +7,27 @@ interface Props {
 
 export const TodoForm: React.FC<Props> = ({ onAddTodo }) => {
   const [title, setTitle] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (title.trim() === '') {
+      setError('Title should be not empty');
+
+      return;
+    }
 
     const newTodo: Todo = {
       id: Date.now(),
       userId: 0,
-      title: title,
+      title: title.trim(),
       completed: false,
     };
 
     onAddTodo(newTodo);
     setTitle('');
+    setError(null);
   };
 
   return (
@@ -32,6 +40,7 @@ export const TodoForm: React.FC<Props> = ({ onAddTodo }) => {
         value={title}
         onChange={e => setTitle(e.target.value)}
       />
+      {error && <div className="error">{error}</div>}
     </form>
   );
 };

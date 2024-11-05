@@ -4,41 +4,55 @@ import React, { useState, useEffect } from 'react';
 import { getTodos, USER_ID } from './api/todos';
 import { TodoList } from './TodoList';
 import { Footer } from './Footer';
-import { ErrorNotification } from './ErrorNotification';
+import { Error } from './ErrorNotification';
 import { TodoForm } from './TodoForm';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!USER_ID) {
+      setErrorMessage('USER_ID is not set');
+
+      return;
+    }
+
     getTodos()
-      .then(setTodos)
-      .catch(() => setError('Unable to load todos'));
+      .then(fetchedTodos => {
+        setTodos(fetchedTodos);
+        setErrorMessage('');
+      })
+      .catch(() => {
+        setErrorMessage('Unable to load todos');
+      });
   }, []);
 
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
-
   const handleAddTodo = (newTodo: Todo) => {
-    setTodos([...todos, newTodo]);
-  };
+    if (!newTodo.title) {
+      setErrorMessage('Title should not be empty');
 
-  if (error) {
-    return <ErrorNotification message={error} onClose={() => setError(null)} />;
-  }
+      return;
+    }
+
+    setTodos([...todos, newTodo]);
+    setErrorMessage('');
+  };
 
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
+
+      <Error errorMessage={errorMessage} setErrorMessage={setErrorMessage} />
+
       <div className="todo__content">
         <TodoForm onAddTodo={handleAddTodo} />
         <TodoList todos={todos} />
-        <Footer todos={todos} />
+        {todos.length > 0 && <Footer todos={todos} />}
       </div>
+      {!USER_ID && <UserWarning />}
     </div>
   );
 };

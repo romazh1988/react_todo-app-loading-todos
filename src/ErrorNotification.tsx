@@ -1,23 +1,32 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import cn from 'classnames';
 
 interface Props {
-  message: string;
-  onClose: () => void;
+  errorMessage: string | null;
+  setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
-export const ErrorNotification: React.FC<Props> = ({ message, onClose }) => {
+export const Error: React.FC<Props> = ({ errorMessage, setErrorMessage }) => {
+  useEffect(() => {
+    if (errorMessage) {
+      setTimeout(() => setErrorMessage(''), 3000);
+    }
+  }, [setErrorMessage, errorMessage]);
+
   return (
     <div
       data-cy="ErrorNotification"
-      className="notification is-danger is-light has-text-weight-normal"
+      className={cn('notification is-danger is-light has-text-weight-normal', {
+        hidden: !errorMessage,
+      })}
     >
       <button
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={onClose}
+        onClick={() => setErrorMessage(null)}
       />
-      {message}
+      {errorMessage}
     </div>
   );
 };

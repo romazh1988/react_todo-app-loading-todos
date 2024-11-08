@@ -8,11 +8,12 @@ import { Error } from './ErrorNotification';
 import { TodoForm } from './TodoForm';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
+import { FilterEnum } from './types/filterEnum';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
+  const [filter, setFilter] = useState<FilterEnum>(FilterEnum.All);
 
   useEffect(() => {
     if (!USER_ID) {
@@ -47,15 +48,14 @@ export const App: React.FC = () => {
   };
 
   const filteredTodos = todos.filter(todo => {
-    if (filter === 'active') {
-      return !todo.completed;
+    switch (filter) {
+      case FilterEnum.Active:
+        return !todo.completed;
+      case FilterEnum.Completed:
+        return todo.completed;
+      default:
+        return true;
     }
-
-    if (filter === 'completed') {
-      return todo.completed;
-    }
-
-    return true;
   });
 
   const handleDeleteTodo = async (id: number) => {

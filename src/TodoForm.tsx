@@ -11,9 +11,7 @@ export const TodoForm: React.FC<Props> = ({ onAddTodo }) => {
   const intputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (intputRef.current) {
-      intputRef.current.focus();
-    }
+    intputRef.current?.focus();
   }, []);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -40,6 +38,7 @@ export const TodoForm: React.FC<Props> = ({ onAddTodo }) => {
   return (
     <form onSubmit={handleSubmit}>
       <input
+        ref={intputRef}
         data-cy="NewTodoField"
         type="text"
         className="todoapp__new-todo"

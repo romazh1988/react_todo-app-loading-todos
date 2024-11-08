@@ -1,10 +1,11 @@
 import React from 'react';
 import { Todo } from './types/Todo';
+import { FilterEnum } from './types/filterEnum';
 
 interface Props {
   todos: Todo[];
-  filter: 'all' | 'active' | 'completed';
-  setFilter: (filter: 'all' | 'active' | 'completed') => void;
+  filter: FilterEnum;
+  setFilter: (filter: FilterEnum) => void;
   clearCompleted: () => void;
 }
 
@@ -26,8 +27,8 @@ export const Footer: React.FC<Props> = ({
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
-          className={`filter__link ${filter === 'all' ? 'selected' : ''}`}
-          onClick={() => setFilter('all')}
+          className={`filter__link ${filter === FilterEnum.All ? 'selected' : ''}`}
+          onClick={() => setFilter(FilterEnum.All)}
           data-cy="FilterLinkAll"
         >
           All
@@ -35,8 +36,8 @@ export const Footer: React.FC<Props> = ({
 
         <a
           href="#/active"
-          className={`filter__link ${filter === 'active' ? 'selected' : ''}`}
-          onClick={() => setFilter('active')}
+          className={`filter__link ${filter === FilterEnum.Active ? 'selected' : ''}`}
+          onClick={() => setFilter(FilterEnum.Active)}
           data-cy="FilterLinkActive"
         >
           Active
@@ -44,8 +45,8 @@ export const Footer: React.FC<Props> = ({
 
         <a
           href="#/completed"
-          className={`filter__link ${filter === 'completed' ? 'selected' : ''}`}
-          onClick={() => setFilter('completed')}
+          className={`filter__link ${filter === FilterEnum.Completed ? 'selected' : ''}`}
+          onClick={() => setFilter(FilterEnum.Completed)}
           data-cy="FilterLinkCompleted"
         >
           Complited

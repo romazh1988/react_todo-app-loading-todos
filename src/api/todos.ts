@@ -1,6 +1,10 @@
 import { Todo } from '../types/Todo';
 import { client } from '../utils/fetchClient';
 
+export const deleteTodoApi = async (id: number): Promise<void> => {
+  await client.delete(`/todos/${id}`);
+};
+
 export const USER_ID = 1798;
 
 export const getTodos = () => {

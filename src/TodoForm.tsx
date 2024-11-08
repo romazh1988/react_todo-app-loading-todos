@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Todo } from './types/Todo';
 
 interface Props {
@@ -8,6 +8,13 @@ interface Props {
 export const TodoForm: React.FC<Props> = ({ onAddTodo }) => {
   const [title, setTitle] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const intputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (intputRef.current) {
+      intputRef.current.focus();
+    }
+  }, []);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

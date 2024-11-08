@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState, useEffect } from 'react';
-import { getTodos, USER_ID } from './api/todos';
+import { deleteTodoApi, getTodos, USER_ID } from './api/todos';
 import { TodoList } from './TodoList';
 import { Footer } from './Footer';
 import { Error } from './ErrorNotification';
@@ -12,6 +12,7 @@ import { UserWarning } from './UserWarning';
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
 
   useEffect(() => {
     if (!USER_ID) {
@@ -41,6 +42,32 @@ export const App: React.FC = () => {
     setErrorMessage('');
   };
 
+  const clearCompleted = () => {
+    setTodos(todos.filter(todo => !todo.completed));
+  };
+
+  const filteredTodos = todos.filter(todo => {
+    if (filter === 'active') {
+      return !todo.completed;
+    }
+
+    if (filter === 'completed') {
+      return todo.completed;
+    }
+
+    return true;
+  });
+
+  const handleDeleteTodo = async (id: number) => {
+    try {
+      await deleteTodoApi(id);
+      setTodos(todos.filter(todo => todo.id !== id));
+      setErrorMessage('');
+    } catch (error) {
+      setErrorMessage('Unable to delete todo');
+    }
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -49,8 +76,15 @@ export const App: React.FC = () => {
 
       <div className="todo__content">
         <TodoForm onAddTodo={handleAddTodo} />
-        <TodoList todos={todos} />
-        {todos.length > 0 && <Footer todos={todos} />}
+        <TodoList todos={filteredTodos} onDeleteTodo={handleDeleteTodo} />
+        {todos.length > 0 && (
+          <Footer
+            todos={todos}
+            filter={filter}
+            setFilter={setFilter}
+            clearCompleted={clearCompleted}
+          />
+        )}
       </div>
       {!USER_ID && <UserWarning />}
     </div>

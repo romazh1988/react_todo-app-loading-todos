@@ -1,22 +1,21 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Todo } from './types/Todo';
 
 interface Props {
   todo: Todo;
   onDelete: (id: number) => void;
-  loadingId: number | null;
+  loadingIds: number[];
 }
 
-export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const handleDelete = () => {
-    setIsLoading(true);
-    onDelete(todo.id);
-  };
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  onDelete,
+  loadingIds = [],
+}) => {
+  const isLoading = Array.isArray(loadingIds) && loadingIds.includes(todo.id);
 
   return (
     <div className={`todo ${todo.completed ? 'completed' : ''}`} data-cy="Todo">
@@ -38,16 +37,17 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
         className="todo__remove"
         data-cy="TodoDelete"
         onClick={() => onDelete(todo.id)}
-        disabled={loadingId === todo.id}
+        disabled={isLoading}
       >
         x
       </button>
-      {isLoading && (
-        <div data-cy="TodoLoader" className="modal overlay is-active">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      )}
+      <div
+        data-cy="TodoLoader"
+        className={`modal overlay ${isLoading ? 'is-active' : ''}`}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
     </div>
   );
 };
